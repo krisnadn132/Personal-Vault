@@ -1002,18 +1002,21 @@ const AppState = {
 
             // Wipe Data
             document.getElementById('btn-reset-data').addEventListener('click', () => { 
-                UI.modal.show({ title: 'WIPE ALL DATA', icon: 'warning', bodyHTML: '<p style="color:var(--danger); font-weight:bold;">WARNING!</p><p>Type "WIPE" below if you want to permanently format/delete the entire application data.</p><div class="form-group" style="margin-top:16px;"><input type="text" id="modal-wipe-input" class="form-control" placeholder="WIPE"></div>', buttons: [
-                    {text: 'Cancel', class: 'btn-cancel'},
-                    {text: 'Destroy Data', class: 'btn-danger', onClick: () => {
-                    // ... kodingan modal Danger Zone Anda sebelumnya ...
-                        buttons: [
-                            { text: 'Cancel', class: 'btn-cancel' },
-                            { 
-                                text: 'Yes, Wipe Everything', 
-                                class: 'btn-danger', 
-                                // Pastikan ada kata 'async' sebelum tanda kurung
-                                onClick: async () => { 
-                                    
+                UI.modal.show({ 
+                    title: 'WIPE ALL DATA', 
+                    icon: 'warning', 
+                    bodyHTML: '<p style="color:var(--danger); font-weight:bold;">WARNING!</p><p>Type "WIPE" below if you want to permanently format/delete the entire application data.</p><div class="form-group" style="margin-top:16px;"><input type="text" id="modal-wipe-input" class="form-control" placeholder="WIPE"></div>', 
+                    buttons: [
+                        { text: 'Cancel', class: 'btn-cancel' },
+                        { 
+                            text: 'Destroy Data', 
+                            class: 'btn-danger', 
+                            onClick: async () => {
+                                // Ambil teks yang diketik pengguna
+                                const confirmText = document.getElementById('modal-wipe-input').value;
+                                
+                                // Cek apakah pengguna mengetik WIPE dengan benar
+                                if (confirmText === 'WIPE') {
                                     // 1. Timpa data saat ini dengan data bawaan yang kosong
                                     AppState.data = (typeof structuredClone === 'function') ? structuredClone(DEFAULT_DATA) : JSON.parse(JSON.stringify(DEFAULT_DATA));
                                     
@@ -1023,14 +1026,15 @@ const AppState = {
                                     // 3. Beri notifikasi dan refresh
                                     UI.toast('All data has been permanently wiped!', 'success');
                                     setTimeout(() => location.reload(), 1500);
-                                    }
+                                } else {
+                                    // Jika salah ketik, batalkan dan beri tahu
+                                    UI.toast('Penghapusan dibatalkan. Anda harus mengetik WIPE dengan huruf besar.', 'error');
                                 }
-                            ]
-                        },
-                    }
-                ]});
+                            }
+                        }
+                    ]
+                });
             });
-
             // Export CSV
             document.getElementById('btn-export-csv').addEventListener('click', () => {
                 if(!AppState.data.transactions.length) return UI.toast('No transaction data to export', 'error');
