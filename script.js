@@ -1005,9 +1005,29 @@ const AppState = {
                 UI.modal.show({ title: 'WIPE ALL DATA', icon: 'warning', bodyHTML: '<p style="color:var(--danger); font-weight:bold;">WARNING!</p><p>Type "WIPE" below if you want to permanently format/delete the entire application data.</p><div class="form-group" style="margin-top:16px;"><input type="text" id="modal-wipe-input" class="form-control" placeholder="WIPE"></div>', buttons: [
                     {text: 'Cancel', class: 'btn-cancel'},
                     {text: 'Destroy Data', class: 'btn-danger', onClick: () => {
-                        if(document.getElementById('modal-wipe-input').value === 'WIPE') { localStorage.removeItem(STORAGE_KEY); location.reload(); }
-                        else { UI.toast('Confirmation word mismatch', 'error'); }
-                    }}
+                    // ... kodingan modal Danger Zone Anda sebelumnya ...
+                        buttons: [
+                            { text: 'Cancel', class: 'btn-cancel' },
+                            { 
+                                text: 'Yes, Wipe Everything', 
+                                class: 'btn-danger', 
+                                // Pastikan ada kata 'async' sebelum tanda kurung
+                                onClick: async () => { 
+                                    
+                                    // 1. Timpa data saat ini dengan data bawaan yang kosong
+                                    AppState.data = (typeof structuredClone === 'function') ? structuredClone(DEFAULT_DATA) : JSON.parse(JSON.stringify(DEFAULT_DATA));
+                                    
+                                    // 2. Simpan data kosong ini ke Lokal DAN timpa ke Cloud (GitHub)
+                                    await AppState.save();
+                                    
+                                    // 3. Beri notifikasi dan refresh
+                                    UI.toast('All data has been permanently wiped!', 'success');
+                                    setTimeout(() => location.reload(), 1500);
+                                    }
+                                }
+                            ]
+                        },
+                    }
                 ]});
             });
 
