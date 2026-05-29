@@ -192,12 +192,55 @@
         @media (max-width: 1024px) { .grid-chart { grid-template-columns: 1fr; } }
         @media (max-width: 768px) {
             body { flex-direction: column; }
-            aside { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 16px; flex-direction: row; align-items: center; justify-content: space-between;}
-            .brand { margin-bottom: 0; font-size: 1.2rem;}
-            nav, .sidebar-footer { display: none; } 
-            main { padding: 16px; }
-            .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
-            header { flex-direction: column; align-items: flex-start; gap: 16px; }
-            .header-actions { width: 100%; justify-content: flex-start; }
-            .time-machine-group { width: 100%; justify-content: space-between; }
+            
+            /* 1. Header & Sidebar menjadi di atas */
+            aside { 
+                width: 100%; 
+                height: auto; 
+                border-right: none; 
+                border-bottom: 1px solid var(--border); 
+                padding: 16px; 
+                flex-direction: column; 
+                align-items: center; 
+            }
+            .brand { margin-bottom: 16px; font-size: 1.5rem; text-align: center; }
+            
+            /* 2. Menu Navigasi diubah menjadi horizontal & bisa di-scroll (swipe) ke samping */
+            nav { 
+                display: flex !important; 
+                flex-direction: row !important; 
+                width: 100%; 
+                overflow-x: auto; 
+                gap: 8px; 
+                padding-bottom: 8px;
+                /* Menyembunyikan scrollbar agar terlihat lebih rapi */
+                -ms-overflow-style: none;  
+                scrollbar-width: none;  
+            }
+            nav::-webkit-scrollbar { display: none; }
+            
+            nav a {
+                white-space: nowrap; /* Mencegah teks menu turun ke bawah */
+                padding: 10px 16px;
+                flex-shrink: 0;
+                border-radius: 8px;
+            }
+            
+            /* 3. Sembunyikan footer di HP agar tidak menuhi layar */
+            .sidebar-footer { display: none; } 
+            
+            main { padding: 16px; padding-bottom: 40px; }
+            
+            /* 4. Paksa semua grid dan form menjadi 1 kolom memanjang ke bawah */
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; gap: 16px; }
+            
+            /* 5. Cegah tabel agar tidak merusak layout layar (bisa digeser ke samping) */
+            .table-container, .table-responsive, table { 
+                display: block; 
+                width: 100%; 
+                overflow-x: auto; 
+            }
+            
+            /* Penyesuaian form login untuk HP */
+            .login-box { width: 90%; padding: 24px; }
         }
