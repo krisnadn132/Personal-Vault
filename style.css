@@ -1,0 +1,898 @@
+/* =========================================
+   ROOT VARIABLES
+   ========================================= */
+
+:root {
+
+    --primary: #4f46e5;
+    --primary-light: #818cf8;
+
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+
+    --bg-main: #0f172a;
+    --bg-card: #111827;
+
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+
+    --border: rgba(255,255,255,.08);
+
+    --shadow:
+        0 10px 25px rgba(0,0,0,.25);
+
+    --radius: 18px;
+
+    --transition:
+        all .25s ease;
+
+    --sidebar-width: 280px;
+}
+
+
+/* =========================================
+   LIGHT MODE VARIABLES
+   ========================================= */
+
+body[data-theme="light"] {
+
+    --bg-main: #f1f5f9;
+    --bg-card: #ffffff;
+
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+
+    --border: rgba(15,23,42,.08);
+
+    --shadow:
+        0 10px 30px rgba(15,23,42,.08);
+}
+
+
+/* =========================================
+   GLOBAL RESET
+   ========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+/* =========================================
+   HTML & BODY
+   ========================================= */
+
+html,
+body {
+
+    width: 100%;
+    min-height: 100%;
+
+    font-family:
+        'Inter',
+        sans-serif;
+
+    background:
+        var(--bg-main);
+
+    color:
+        var(--text-main);
+
+    overflow: hidden;
+}
+
+
+/* =========================================
+   BODY
+   ========================================= */
+
+body {
+
+    display: flex;
+    flex-direction: column;
+
+    transition:
+        var(--transition);
+}
+
+
+/* =========================================
+   LINKS
+   ========================================= */
+
+a {
+
+    text-decoration: none;
+    color: inherit;
+}
+
+
+/* =========================================
+   BUTTON RESET
+   ========================================= */
+
+button {
+
+    font-family: inherit;
+    cursor: pointer;
+    outline: none;
+}
+
+
+/* =========================================
+   INPUTS
+   ========================================= */
+
+input,
+select,
+textarea {
+
+    font-family: inherit;
+    outline: none;
+}
+
+
+/* =========================================
+   LOGIN SCREEN
+   ========================================= */
+
+#login-screen {
+
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(79,70,229,.25),
+            transparent 40%
+        ),
+        radial-gradient(
+            circle at bottom right,
+            rgba(236,72,153,.18),
+            transparent 40%
+        ),
+        var(--bg-main);
+}
+
+
+/* =========================================
+   LOGIN CARD
+   ========================================= */
+
+.login-card {
+
+    width: 100%;
+    max-width: 420px;
+
+    background:
+        var(--bg-card);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        24px;
+
+    padding:
+        42px;
+
+    box-shadow:
+        var(--shadow);
+
+    text-align:
+        center;
+
+    backdrop-filter:
+        blur(12px);
+}
+
+
+/* =========================================
+   FORM GROUP
+   ========================================= */
+
+.form-group {
+
+    margin-bottom: 18px;
+}
+
+
+/* =========================================
+   FORM CONTROL
+   ========================================= */
+
+.form-control {
+
+    width: 100%;
+
+    background:
+        rgba(255,255,255,.04);
+
+    border:
+        1px solid var(--border);
+
+    color:
+        var(--text-main);
+
+    border-radius:
+        12px;
+
+    padding:
+        14px 16px;
+
+    font-size:
+        .95rem;
+
+    transition:
+        var(--transition);
+}
+
+
+/* =========================================
+   FORM CONTROL FOCUS
+   ========================================= */
+
+.form-control:focus {
+
+    border-color:
+        var(--primary);
+
+    box-shadow:
+        0 0 0 4px rgba(79,70,229,.12);
+}
+
+
+/* =========================================
+   PASSWORD WRAPPER
+   ========================================= */
+
+.pwd-wrapper {
+
+    position: relative;
+}
+
+
+/* =========================================
+   TOGGLE PASSWORD BUTTON
+   ========================================= */
+
+.btn-eye {
+
+    position: absolute;
+
+    top: 50%;
+    right: 14px;
+
+    transform:
+        translateY(-50%);
+
+    border: none;
+    background: transparent;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color:
+        var(--text-muted);
+}
+
+
+/* =========================================
+   PRIMARY BUTTON
+   ========================================= */
+
+.btn-primary {
+
+    width: 100%;
+
+    border: none;
+
+    border-radius:
+        12px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            #7c3aed
+        );
+
+    color: white;
+
+    font-weight: 700;
+
+    transition:
+        var(--transition);
+}
+
+
+/* =========================================
+   PRIMARY BUTTON HOVER
+   ========================================= */
+
+.btn-primary:hover {
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 10px 25px rgba(79,70,229,.25);
+}
+
+
+/* =========================================
+   APP WRAPPER
+   ========================================= */
+
+#app-wrapper {
+
+    display: flex;
+
+    width: 100%;
+    height: 100vh;
+}
+
+
+/* =========================================
+   SIDEBAR
+   ========================================= */
+
+aside {
+
+    width:
+        var(--sidebar-width);
+
+    min-width:
+        var(--sidebar-width);
+
+    background:
+        rgba(15,23,42,.75);
+
+    backdrop-filter:
+        blur(16px);
+
+    border-right:
+        1px solid var(--border);
+
+    display: flex;
+    flex-direction: column;
+
+    padding:
+        24px 18px;
+}
+
+
+/* =========================================
+   BRAND
+   ========================================= */
+
+.brand {
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    font-size:
+        1.35rem;
+
+    font-weight:
+        800;
+
+    margin-bottom:
+        34px;
+
+    padding:
+        0 10px;
+}
+
+
+/* =========================================
+   NAVIGATION
+   ========================================= */
+
+nav {
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+
+/* =========================================
+   NAV LINK
+   ========================================= */
+
+.nav-link {
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding:
+        14px 16px;
+
+    border-radius:
+        14px;
+
+    color:
+        var(--text-muted);
+
+    font-weight:
+        600;
+
+    transition:
+        var(--transition);
+}
+
+
+/* =========================================
+   NAV LINK HOVER
+   ========================================= */
+
+.nav-link:hover {
+
+    background:
+        rgba(255,255,255,.04);
+
+    color:
+        var(--text-main);
+}
+
+
+/* =========================================
+   ACTIVE NAV LINK
+   ========================================= */
+
+.nav-link.active {
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(79,70,229,.18),
+            rgba(124,58,237,.18)
+        );
+
+    color:
+        white;
+
+    border:
+        1px solid rgba(79,70,229,.2);
+}
+
+
+/* =========================================
+   SIDEBAR FOOTER
+   ========================================= */
+
+.sidebar-footer {
+
+    margin-top: auto;
+}
+
+
+/* =========================================
+   PROFILE CARD
+   ========================================= */
+
+.profile-card {
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    background:
+        rgba(255,255,255,.04);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        16px;
+
+    padding:
+        14px;
+
+    margin-bottom:
+        18px;
+}
+
+
+/* =========================================
+   PROFILE AVATAR
+   ========================================= */
+
+.profile-avatar {
+
+    width: 44px;
+    height: 44px;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--primary),
+            #ec4899
+        );
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+
+    font-weight: 700;
+}
+
+
+/* =========================================
+   LOGOUT BUTTON
+   ========================================= */
+
+.btn-logout {
+
+    width: 100%;
+
+    border: none;
+
+    border-radius:
+        14px;
+
+    padding:
+        14px;
+
+    background:
+        rgba(239,68,68,.1);
+
+    color:
+        var(--danger);
+
+    font-weight:
+        700;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    transition:
+        var(--transition);
+}
+
+
+/* =========================================
+   LOGOUT HOVER
+   ========================================= */
+
+.btn-logout:hover {
+
+    background:
+        rgba(239,68,68,.18);
+}
+
+
+/* =========================================
+   MAIN CONTENT
+   ========================================= */
+
+main {
+
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding:
+        28px;
+}
+
+
+/* =========================================
+   HEADER
+   ========================================= */
+
+header {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 18px;
+
+    margin-bottom:
+        28px;
+}
+
+
+/* =========================================
+   HEADER TITLE
+   ========================================= */
+
+.header-title h1 {
+
+    font-size:
+        1.9rem;
+
+    font-weight:
+        800;
+}
+
+
+/* =========================================
+   HEADER SUBTITLE
+   ========================================= */
+
+.header-title p {
+
+    color:
+        var(--text-muted);
+
+    margin-top:
+        4px;
+}
+
+
+/* =========================================
+   HEADER ACTIONS
+   ========================================= */
+
+.header-actions {
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+
+/* =========================================
+   TIME MACHINE GROUP
+   ========================================= */
+
+.time-machine-group {
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    background:
+        rgba(255,255,255,.04);
+
+    border:
+        1px solid var(--border);
+
+    border-radius:
+        14px;
+
+    padding:
+        8px 10px;
+}
+
+
+/* =========================================
+   TIME SELECT
+   ========================================= */
+
+.time-select {
+
+    background: transparent;
+    border: none;
+
+    color:
+        var(--text-main);
+
+    font-weight: 600;
+}
+
+
+/* =========================================
+   ICON BUTTON
+   ========================================= */
+
+.btn-icon {
+
+    border: none;
+
+    background:
+        rgba(255,255,255,.05);
+
+    border:
+        1px solid var(--border);
+
+    width: 46px;
+    height: 46px;
+
+    border-radius:
+        14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color:
+        var(--text-main);
+
+    transition:
+        var(--transition);
+}
+
+
+/* =========================================
+   ICON BUTTON HOVER
+   ========================================= */
+
+.btn-icon:hover {
+
+    transform:
+        translateY(-2px);
+}
+
+
+/* =========================================
+   MODAL OVERLAY
+   ========================================= */
+
+.modal-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    background:
+        rgba(0,0,0,.55);
+
+    backdrop-filter:
+        blur(6px);
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    z-index: 9999;
+}
+
+
+/* =========================================
+   MODAL CARD
+   ========================================= */
+
+.modal-card {
+
+    width: 100%;
+    max-width: 520px;
+
+    background:
+        var(--bg-card);
+
+    border-radius:
+        24px;
+
+    border:
+        1px solid var(--border);
+
+    padding:
+        28px;
+
+    box-shadow:
+        var(--shadow);
+}
+
+
+/* =========================================
+   MODAL TITLE
+   ========================================= */
+
+.modal-title {
+
+    font-size:
+        1.2rem;
+
+    font-weight:
+        800;
+
+    margin-bottom:
+        16px;
+}
+
+
+/* =========================================
+   MODAL BODY
+   ========================================= */
+
+.modal-body {
+
+    color:
+        var(--text-muted);
+
+    line-height:
+        1.7;
+}
+
+
+/* =========================================
+   MODAL ACTIONS
+   ========================================= */
+
+.modal-actions {
+
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+
+    margin-top:
+        28px;
+}
+
+
+/* =========================================
+   TOAST CONTAINER
+   ========================================= */
+
+#toast-container {
+
+    position: fixed;
+
+    right: 24px;
+    bottom: 24px;
+
+    z-index: 99999;
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 1100px) {
+
+    aside {
+
+        position: fixed;
+
+        z-index: 999;
+
+        left: -100%;
+
+        height: 100vh;
+    }
+
+    main {
+
+        width: 100%;
+    }
+}
+
+
+@media (max-width: 768px) {
+
+    header {
+
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-actions {
+
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .time-machine-group {
+
+        width: 100%;
+    }
+}

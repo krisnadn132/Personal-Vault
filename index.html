@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <!-- =========================================
+         META CONFIGURATION
+         ========================================= -->
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <meta
+        http-equiv="X-UA-Compatible"
+        content="IE=edge">
+
+    <meta
+        name="theme-color"
+        content="#0f172a">
+
+    <meta
+        name="description"
+        content="Personal Vault Enterprise Financial Dashboard">
+
+    <!-- =========================================
+         TITLE
+         ========================================= -->
+
+    <title>
+        Personal Vault
+    </title>
+
+    <!-- =========================================
+         GOOGLE FONTS
+         ========================================= -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- =========================================
+         MATERIAL ICONS
+         ========================================= -->
+
+    <link
+        href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
+        rel="stylesheet">
+
+    <!-- =========================================
+         CHART JS
+         ========================================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- =========================================
+         MAIN STYLESHEET
+         ========================================= -->
+
+    <link
+        rel="stylesheet"
+        href="style.css">
+
+</head>
+
+<body data-theme="dark">
+
+    <!-- =========================================
+         APPLICATION ROOT
+         ========================================= -->
+
+    <div id="app-root">
+
+        <!-- =====================================
+             TOAST CONTAINER
+             ===================================== -->
+
+        <div id="toast-container"></div>
+
+        <!-- =====================================
+             LOGIN SCREEN
+             ===================================== -->
+
+        <section id="login-screen">
+
+            <div class="login-card">
+
+                <!-- LOGO -->
+
+                <div class="login-logo">
+
+                    <span class="material-icons-round">
+                        lock
+                    </span>
+
+                </div>
+
+                <!-- TITLE -->
+
+                <h1 class="login-title">
+                    Personal Vault
+                </h1>
+
+                <!-- SUBTITLE -->
+
+                <p class="login-subtitle">
+                    Enterprise Offline Financial System
+                </p>
+
+                <!-- FORM -->
+
+                <form id="loginForm">
+
+                    <!-- USERNAME -->
+
+                    <div class="form-group">
+
+                        <label for="login-username">
+                            Username
+                        </label>
+
+                        <input
+                            type="text"
+                            id="login-username"
+                            class="form-control"
+                            placeholder="Enter username"
+                            autocomplete="username"
+                            required>
+
+                    </div>
+
+                    <!-- PASSWORD -->
+
+                    <div class="form-group">
+
+                        <label for="login-password">
+                            Password
+                        </label>
+
+                        <div class="password-wrapper">
+
+                            <input
+                                type="password"
+                                id="login-password"
+                                class="form-control"
+                                placeholder="Enter password"
+                                autocomplete="current-password"
+                                required>
+
+                            <button
+                                type="button"
+                                id="btn-toggle-pwd"
+                                class="btn-password-toggle">
+
+                                <span class="material-icons-round">
+                                    visibility
+                                </span>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- LOGIN ERROR -->
+
+                    <div
+                        id="login-error"
+                        class="login-error">
+
+                        Authentication Failed
+
+                    </div>
+
+                    <!-- BUTTON -->
+
+                    <button
+                        type="submit"
+                        class="btn-primary">
+
+                        Unlock Vault
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </section>
+
+        <!-- =====================================
+             MAIN APPLICATION
+             ===================================== -->
+
+        <div
+            id="app-wrapper"
+            class="app-wrapper">
+
+            <!-- =================================
+                 SIDEBAR
+                 ================================= -->
+
+            <aside id="sidebar">
+
+                <!-- BRAND -->
+
+                <div class="brand">
+
+                    <span class="material-icons-round">
+                        account_balance_wallet
+                    </span>
+
+                    <span>
+                        Personal Vault
+                    </span>
+
+                </div>
+
+                <!-- NAVIGATION -->
+
+                <nav class="navigation">
+
+                    <!-- DASHBOARD -->
+
+                    <a
+                        href="#"
+                        class="nav-link active"
+                        data-target="view-dashboard">
+
+                        <span class="material-icons-round">
+                            dashboard
+                        </span>
+
+                        <span>
+                            Dashboard
+                        </span>
+
+                    </a>
+
+                    <!-- BUDGET -->
+
+                    <a
+                        href="#"
+                        class="nav-link"
+                        data-target="view-budget">
+
+                        <span class="material-icons-round">
+                            payments
+                        </span>
+
+                        <span>
+                            Budget
+                        </span>
+
+                    </a>
+
+                    <!-- SUBSCRIPTIONS -->
+
+                    <a
+                        href="#"
+                        class="nav-link"
+                        data-target="view-subscriptions">
+
+                        <span class="material-icons-round">
+                            subscriptions
+                        </span>
+
+                        <span>
+                            Subscriptions
+                        </span>
+
+                    </a>
+
+                    <!-- SAVINGS -->
+
+                    <a
+                        href="#"
+                        class="nav-link"
+                        data-target="view-savings">
+
+                        <span class="material-icons-round">
+                            savings
+                        </span>
+
+                        <span>
+                            Savings
+                        </span>
+
+                    </a>
+
+                    <!-- WISHLIST -->
+
+                    <a
+                        href="#"
+                        class="nav-link"
+                        data-target="view-wishlist">
+
+                        <span class="material-icons-round">
+                            shopping_bag
+                        </span>
+
+                        <span>
+                            Wishlist
+                        </span>
+
+                    </a>
+
+                    <!-- CRYPTO -->
+
+                    <a
+                        href="#"
+                        class="nav-link"
+                        data-target="view-crypto">
+
+                        <span class="material-icons-round">
+                            currency_bitcoin
+                        </span>
+
+                        <span>
+                            Crypto
+                        </span>
+
+                    </a>
+
+                    <!-- ANALYTICS -->
+
+                    <a
+                        href="#"
+                        class="nav-link"
+                        data-target="view-analytics">
+
+                        <span class="material-icons-round">
+                            insights
+                        </span>
+
+                        <span>
+                            Analytics
+                        </span>
+
+                    </a>
+
+                    <!-- SETTINGS -->
+
+                    <a
+                        href="#"
+                        class="nav-link"
+                        data-target="view-settings">
+
+                        <span class="material-icons-round">
+                            settings
+                        </span>
+
+                        <span>
+                            Settings
+                        </span>
+
+                    </a>
+
+                </nav>
+
+                <!-- SIDEBAR FOOTER -->
+
+                <div class="sidebar-footer">
+
+                    <button
+                        type="button"
+                        id="btn-theme-toggle"
+                        class="btn-sidebar">
+
+                        <span class="material-icons-round">
+                            dark_mode
+                        </span>
+
+                        <span>
+                            Toggle Theme
+                        </span>
+
+                    </button>
+
+                    <button
+                        type="button"
+                        id="btn-logout"
+                        class="btn-sidebar danger">
+
+                        <span class="material-icons-round">
+                            logout
+                        </span>
+
+                        <span>
+                            Logout
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </aside>
+
+            <!-- =================================
+                 MAIN CONTENT
+                 ================================= -->
+
+            <main id="main-content">
+
+                <!-- HEADER -->
+
+                <header class="main-header">
+
+                    <div>
+
+                        <h1 id="page-title">
+                            Dashboard
+                        </h1>
+
+                        <p id="current-date">
+                            Loading...
+                        </p>
+
+                    </div>
+
+                </header>
+
+                <!-- =================================
+                     VIEW CONTAINER
+                     ================================= -->
+
+                <section id="view-container">
+
+                    <!-- =================================
+                         DASHBOARD VIEW
+                         ================================= -->
+
+                    <section
+                        id="view-dashboard"
+                        class="view-section active-view">
+
+                        <!-- STATS -->
+
+                        <div class="stats-grid">
+
+                            <!-- TOTAL BALANCE -->
+
+                            <div class="stat-card">
+
+                                <div class="stat-header">
+
+                                    <span>
+                                        Total Balance
+                                    </span>
+
+                                    <span class="material-icons-round">
+                                        account_balance_wallet
+                                    </span>
+
+                                </div>
+
+                                <h2 id="total-balance">
+                                    Rp0
+                                </h2>
+
+                            </div>
+
+                            <!-- INCOME -->
+
+                            <div class="stat-card">
+
+                                <div class="stat-header">
+
+                                    <span>
+                                        Income
+                                    </span>
+
+                                    <span class="material-icons-round">
+                                        trending_up
+                                    </span>
+
+                                </div>
+
+                                <h2 id="total-income">
+                                    Rp0
+                                </h2>
+
+                            </div>
+
+                            <!-- EXPENSE -->
+
+                            <div class="stat-card">
+
+                                <div class="stat-header">
+
+                                    <span>
+                                        Expense
+                                    </span>
+
+                                    <span class="material-icons-round">
+                                        trending_down
+                                    </span>
+
+                                </div>
+
+                                <h2 id="total-expense">
+                                    Rp0
+                                </h2>
+
+                            </div>
+
+                        </div>
+
+                        <!-- CHARTS -->
+
+                        <div class="chart-grid">
+
+                            <!-- EXPENSE CHART -->
+
+                            <div class="chart-card">
+
+                                <h3>
+                                    Expense Breakdown
+                                </h3>
+
+                                <canvas id="expense-chart"></canvas>
+
+                            </div>
+
+                            <!-- TREND CHART -->
+
+                            <div class="chart-card">
+
+                                <h3>
+                                    Financial Trend
+                                </h3>
+
+                                <canvas id="trend-chart"></canvas>
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                    <!-- =================================
+                         BUDGET VIEW
+                         ================================= -->
+
+                    <section
+                        id="view-budget"
+                        class="view-section">
+
+                        <div class="empty-state">
+
+                            <span class="material-icons-round">
+                                payments
+                            </span>
+
+                            <h2>
+                                Budget Module
+                            </h2>
+
+                            <p>
+                                Budget system will appear here.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+                    <!-- =================================
+                         SUBSCRIPTIONS VIEW
+                         ================================= -->
+
+                    <section
+                        id="view-subscriptions"
+                        class="view-section">
+
+                        <div class="empty-state">
+
+                            <span class="material-icons-round">
+                                subscriptions
+                            </span>
+
+                            <h2>
+                                Subscription Module
+                            </h2>
+
+                            <p>
+                                Subscription system will appear here.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+                    <!-- =================================
+                         SAVINGS VIEW
+                         ================================= -->
+
+                    <section
+                        id="view-savings"
+                        class="view-section">
+
+                        <div class="empty-state">
+
+                            <span class="material-icons-round">
+                                savings
+                            </span>
+
+                            <h2>
+                                Savings Module
+                            </h2>
+
+                            <p>
+                                Savings goal system will appear here.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+                    <!-- =================================
+                         WISHLIST VIEW
+                         ================================= -->
+
+                    <section
+                        id="view-wishlist"
+                        class="view-section">
+
+                        <div class="empty-state">
+
+                            <span class="material-icons-round">
+                                shopping_bag
+                            </span>
+
+                            <h2>
+                                Wishlist Module
+                            </h2>
+
+                            <p>
+                                Wishlist system will appear here.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+                    <!-- =================================
+                         CRYPTO VIEW
+                         ================================= -->
+
+                    <section
+                        id="view-crypto"
+                        class="view-section">
+
+                        <div class="empty-state">
+
+                            <span class="material-icons-round">
+                                currency_bitcoin
+                            </span>
+
+                            <h2>
+                                Crypto Module
+                            </h2>
+
+                            <p>
+                                Crypto portfolio system will appear here.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+                    <!-- =================================
+                         ANALYTICS VIEW
+                         ================================= -->
+
+                    <section
+                        id="view-analytics"
+                        class="view-section">
+
+                        <div class="empty-state">
+
+                            <span class="material-icons-round">
+                                insights
+                            </span>
+
+                            <h2>
+                                Analytics Module
+                            </h2>
+
+                            <p>
+                                Analytics system will appear here.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+                    <!-- =================================
+                         SETTINGS VIEW
+                         ================================= -->
+
+                    <section
+                        id="view-settings"
+                        class="view-section">
+
+                        <div class="empty-state">
+
+                            <span class="material-icons-round">
+                                settings
+                            </span>
+
+                            <h2>
+                                Settings Module
+                            </h2>
+
+                            <p>
+                                Application settings will appear here.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+                </section>
+
+            </main>
+
+        </div>
+
+    </div>
+
+    <!-- =========================================
+         MAIN APPLICATION SCRIPT
+         ========================================= -->
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
