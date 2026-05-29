@@ -661,7 +661,7 @@ const AppState = {
                     document.getElementById('summary-wish').innerText = `Total Pending Cost: ${Util.idr(totWish)}`;
                 },
 
-                crypto() {
+crypto() {
                     let port = {}; let tCost = 0; let gPnl = 0;
                     
                     let chronoTrades = [...AppState.data.cryptoTrades]
@@ -691,6 +691,37 @@ const AppState = {
                             } 
                         }
                     });
+
+                    // ==========================================
+                    // 🌟 KODINGAN BARU: HITUNG HARGA LIVE (ANTI-MACET)
+                    // ==========================================
+                    try {
+                        let totalLiveValueUSD = 0;
+                        
+                        for (let coin in port) {
+                            let amountDiTangan = port[coin].h || 0; 
+                            
+                            if (amountDiTangan > 0) {
+                                let hargaLive = 0;
+                                // Cek ganda agar tidak crash jika internet mati / CoinGecko lambat
+                                if (typeof CryptoAPI !== 'undefined' && CryptoAPI.pricesUSD) {
+                                    hargaLive = CryptoAPI.pricesUSD[coin] || 0;
+                                }
+                                totalLiveValueUSD += (amountDiTangan * hargaLive);
+                            }
+                        }
+
+                        // Kirim total harganya ke Dashboard HTML
+                        const elTotal = document.getElementById('crypto-net-worth');
+                        if (elTotal) {
+                            elTotal.innerText = `$ ${totalLiveValueUSD.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+                        }
+                    } catch (err) {
+                        console.log("Live price calculations are temporarily disabled to prevent the table from freezing", err);
+                    }
+                    // ==========================================
+
+                    // ... (kodingan asli Anda yang mencetak isi tabel/baris <tr> tetap biarkan di bawah sini) ...
 
                     let pHtml = '';
                     Object.keys(port).forEach(coin => {
