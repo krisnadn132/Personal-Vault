@@ -767,25 +767,43 @@ const AppState = {
                 let u = btoa(document.getElementById('login-username').value);
                 let p = btoa(document.getElementById('login-password').value);
                 
-                if(u === U_HASH && p === P_HASH) {
-                    // Tunggu hingga harga kripto selesai di-download sebelum memuat Dashboard
-                await CryptoAPI.fetchPrices();
-                AppState.load();
+                if (u === U_HASH && p === P_HASH) {
+                    // Tampilkan teks loading di tombol login agar user tahu
+                    const btnLogin = e.target.querySelector('button[type="submit"]');
+                    let oldText = btnLogin.innerText;
+                    btnLogin.innerText = "Syncing from Cloud...";
+                    btnLogin.disabled = true;
 
-                    document.getElementById('login-screen').style.opacity = '0';
-                    setTimeout(() => {
+                    try {
+                        // 1. Tunggu sinkronisasi data utama (Lokal / GitHub)
+                        await AppState.init(); 
+                        
+                        // 2. Tarik harga kripto secara "diam-diam" di latar belakang (Tanpa await!)
+                        if (typeof CryptoAPI !== 'undefined') {
+                            CryptoAPI.fetchPrices().then(() => {
+                                // Update/Refresh angka di layar secara otomatis jika harga sukses ditarik
+                                if (typeof Render !== 'undefined') {
+                                    Render.fiatAndNetWorth();
+                                    if (typeof Render.crypto === 'function') Render.crypto();
+                                }
+                            }).catch(err => console.log("Abaikan error kripto", err));
+                        }
+                    } catch (error) {
+                        console.error("Sistem memaksa masuk melewati error:", error);
+                    } finally {
+                        // 3. WAJIB BERJALAN: Sembunyikan layar login dan render UI aplikasi!
+                        // Dengan cara ini, aplikasi PASTI terbuka meskipun internet sedang ngadat.
                         document.getElementById('login-screen').style.display = 'none';
                         document.getElementById('app-wrapper').style.display = 'flex';
+                        Render.initTimeMachine();
+                        Render.all();
                         
-                        document.getElementById('current-date').innerText = Util.todayStr();
-                        document.getElementById('add-date').value = Util.date();
-                        document.getElementById('cry-date').value = Util.date();
-
-                        AppState.init(); 
-                        Render.initTimeMachine(); 
-                        Render.all(); 
-                        UI.toast('Vault Unlocked Successfully!', 'success');
-                    }, 300);
+                        // Kembalikan tombol login seperti semula
+                        btnLogin.innerText = oldText;
+                        btnLogin.disabled = false;
+                        document.getElementById('login-username').value = '';
+                        document.getElementById('login-password').value = '';
+                    }
                 } else {
                     document.getElementById('login-error').style.display = 'block';
                 }
