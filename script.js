@@ -465,6 +465,10 @@ const AppState = {
                 },
 
                 all() {
+                    // Update tanggal hari ini di bawah tulisan Dashboard Overview
+                    const dateEl = document.getElementById('current-date');
+                    if (dateEl) dateEl.innerText = Util.todayStr();
+
                     this.updateDropdowns();
                     this.fiatAndNetWorth(); 
                     this.crypto(); 
