@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4f46e5">
+    <title>Krisna's Vault - Enterprise Financial System</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Vault">
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body data-theme="dark">
+
+    <div id="modal-container" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-title" id="modal-title"><span class="material-icons-round">info</span> Title</div>
+            <div class="modal-body" id="modal-body">Body content goes here.</div>
+            <div class="modal-actions" id="modal-actions"></div>
+        </div>
+    </div>
+
+    <div id="login-screen">
+        <div class="login-card">
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), #ec4899); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.4);">
+                <span class="material-icons-round" style="font-size: 40px; color: white;">wallet</span>
+            </div>
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 5px; color: var(--text-main);">Krisna's Vault</h2>
+            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 32px;">Enterprise Offline Storage</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="text" id="login-username" class="form-control" placeholder="Username" required autocomplete="username">
+                </div>
+                <div class="form-group pwd-wrapper">
+                    <input type="password" id="login-password" class="form-control" placeholder="Password" required autocomplete="current-password">
+                    <button type="button" class="btn-eye" id="btn-toggle-pwd"><span class="material-icons-round">visibility</span></button>
+                </div>
+                <button type="submit" class="btn-primary" style="margin-top: 8px; padding: 14px; font-size: 1rem;">Unlock Vault</button>
+                <p id="login-error" style="color: var(--danger); display: none; margin-top: 16px; font-size: 0.85rem; font-weight: 600; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px; border-radius: 6px;">Authentication Failed! Check Credentials.</p>
+            </form>
+            <p style="margin-top:32px; font-size: 0.75rem; color: var(--text-muted);">🛡️ Data is heavily encrypted and stored locally.</p>
+        </div>
+    </div>
+
+    <div id="app-wrapper" style="display: none; width: 100%; height: 100%;">
+        
+        <aside id="sidebar">
+            <div class="brand"><span class="material-icons-round">account_balance</span> Krisna's</div>
+            <nav id="main-nav">
+                <a href="#view-dashboard" class="nav-link active" data-target="view-dashboard" data-title="Dashboard & Transactions"><span class="material-icons-round">dashboard</span> Dashboard</a>
+                <a href="#view-budget" class="nav-link" data-target="view-budget" data-title="Planner & Budget"><span class="material-icons-round">track_changes</span> Planner & Budget</a>
+                <a href="#view-subscriptions" class="nav-link" data-target="view-subscriptions" data-title="Fixed Subscriptions"><span class="material-icons-round">event_repeat</span> Subscriptions</a>
+                <a href="#view-savings" class="nav-link" data-target="view-savings" data-title="Savings Goals"><span class="material-icons-round">savings</span> Savings Goals</a>
+                <a href="#view-wishlist" class="nav-link" data-target="view-wishlist" data-title="Purchase Wishlist"><span class="material-icons-round">shopping_bag</span> Purchase Wishlist</a>
+                <a href="#view-crypto" class="nav-link" data-target="view-crypto" data-title="Crypto Portfolio"><span class="material-icons-round">currency_bitcoin</span> Crypto Assets</a>
+                <a href="#view-analytics" class="nav-link" data-target="view-analytics" data-title="Advanced Analytics"><span class="material-icons-round">insights</span> Analytics</a>
+                <a href="#view-settings" class="nav-link" data-target="view-settings" data-title="System Settings"><span class="material-icons-round">tune</span> Settings & Backup</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="profile-card">
+                    <div class="profile-avatar">K</div>
+                    <div style="flex: 1; overflow: hidden;">
+                        <p style="font-weight: 700; font-size: 0.9rem; color: var(--text-main); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">Krisna</p>
+                        <p style="font-size: 0.75rem; color: var(--success); font-weight: 600;">Enterprise Admin</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-logout" id="btn-logout"><span class="material-icons-round" style="font-size: 18px;">lock_outline</span> Lock Vault</button>
+            </div>
+        </aside>
+
+        <main id="main-content">
+            <header>
+                <div class="header-title">
+                    <h1 id="page-title">Dashboard Overview</h1>
+                    <p id="current-date">Loading date...</p>
+                </div>
+                <div class="header-actions">
+                    <div class="time-machine-group">
+                        <span class="material-icons-round" style="color:var(--primary); padding-left:4px; font-size:20px;">calendar_month</span>
+                        <select id="filter-year" class="time-select" title="Select Year"></select>
+                        <select id="filter-month" class="time-select" title="Select Month">
+                            <option value="all">All Months</option>
+                            <option value="01">January</option>
+                            <option value="02">February</option>
+                            <option value="03">March</option>
+                            <option value="04">April</option>
+                            <option value="05">May</option>
+                            <option value="06">June</option>
+                            <option value="07">July</option>
+                            <option value="08">August</option>
+                            <option value="09">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn-icon" id="btn-theme-toggle" title="Toggle Dark/Light Mode"><span class="material-icons-round" id="theme-icon">light_mode</span></button>
+                    <button type="button" class="btn-icon" id="btn-export-csv" style="background: var(--primary); color: white; border: none; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);"><span class="material-icons-round">download</span> Backup CSV</button>
+                </div>
+            </header>
+
+            <section id="view-dashboard" class="view-section active">
+                <div class="insight-banner" id="financial-insight">
+                    <div class="icon-box"><span class="material-icons-round">psychology</span></div>
+                    <div class="insight-text">
+                        <h4>Financial AI Insight (Filtered Period)</h4>
+                        <p id="insight-message">Analyzing your financial data...</p>
+                    </div>
+                </div>
+
+                <div class="grid-4">
+                    <div class="stat-card" style="border-left: 4px solid var(--info);">
+                        <div class="stat-icon" style="background: var(--info);"><span class="material-icons-round">diamond</span></div>
+                        <div class="stat-info"><h3 title="Total Cumulative Net Worth">Total Net Worth</h3><h2 id="dash-networth">Rp 0</h2></div>
+                    </div>
+                    <div class="stat-card" style="border-left: 4px solid var(--primary);">
+                        <div class="stat-icon" style="background: var(--primary);"><span class="material-icons-round">account_balance_wallet</span></div>
+                        <div class="stat-info"><h3 title="Cumulative Fiat Balance">Fiat Balance</h3><h2 id="dash-balance">Rp 0</h2></div>
+                    </div>
+                    <div class="stat-card" style="border-left: 4px solid var(--success);">
+                        <div class="stat-icon" style="background: var(--success);"><span class="material-icons-round">south_west</span></div>
+                        <div class="stat-info"><h3 title="Income for Selected Period">Filtered Income</h3><h2 id="dash-income">Rp 0</h2></div>
+                    </div>
+                    <div class="stat-card" style="border-left: 4px solid var(--danger);">
+                        <div class="stat-icon" style="background: var(--danger);"><span class="material-icons-round">north_east</span></div>
+                        <div class="stat-info"><h3 title="Expense for Selected Period">Filtered Expense</h3><h2 id="dash-expense">Rp 0</h2></div>
+                    </div>
+                </div>
+                
+                <div class="grid-chart">
+                    <div class="panel">
+                        <h2 class="panel-title"><span class="material-icons-round" style="color:var(--primary);">bar_chart</span> Cashflow Trend</h2>
+                        <div class="chart-container"><canvas id="dashboardChart"></canvas></div>
+                    </div>
+                    <div class="panel" style="display: flex; flex-direction: column;">
+                        <h2 class="panel-title"><span class="material-icons-round" style="color:var(--warning);">pie_chart</span> Expense Breakdown</h2>
+                        <div class="chart-container" style="flex: 1; min-height: 250px;"><canvas id="expensePieChart"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2 class="panel-title"><span class="material-icons-round" style="color:var(--success);">flash_on</span> Quick Log Transaction</h2>
+                    <form id="form-add-tx">
+                        <div class="grid-4">
+                            <div class="form-group">
+                                <label>Transaction Date</label>
+                                <input type="date" id="add-date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Transaction Type</label>
+                                <select id="add-type" class="form-control" required>
+                                    <option value="income">Income</option>
+                                    <option value="expense" selected>Expense</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select id="add-category" class="form-control" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount (IDR)</label>
+                                <input type="number" id="add-amount" class="form-control" placeholder="e.g. 150000" required>
+                                <span class="format-helper" id="helper-add-amount"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Note / Description (Optional)</label>
+                            <input type="text" id="add-note" class="form-control" placeholder="What was this transaction for?">
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+                            <button type="submit" class="btn-primary" style="width: auto; padding: 12px 32px; font-size: 1rem;">
+                                <span class="material-icons-round" style="font-size: 20px; vertical-align: middle; margin-right: 6px;">save</span> Save Transaction
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title" style="margin-bottom:0;"><span class="material-icons-round">list_alt</span> Fiat Transactions</h2>
+                        <div class="panel-summary" id="summary-tx">Viewing All Time</div>
+                    </div>
+                    <div class="table-wrapper" style="max-height: 500px; overflow-y: auto;">
+                        <table id="table-all">
+                            <thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Note</th><th>Amount</th><th>Action</th></tr></thead>
+                            <tbody id="tbody-fiat-history"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-budget" class="view-section">
+                <div class="grid-2" style="align-items: flex-start;">
+                    <div class="panel">
+                        <h2 class="panel-title"><span class="material-icons-round">edit_note</span> Set Monthly Expense Target</h2>
+                        <form id="form-budget" style="margin-bottom: 32px;">
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label>Category (Expense Only)</label>
+                                    <select id="bud-cat" class="form-control" required></select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Budget Limit (IDR)</label>
+                                    <input type="number" id="bud-amount" class="form-control" required>
+                                    <span class="format-helper" id="helper-bud-amount"></span>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: flex-end;">
+                                <button type="submit" class="btn-primary" style="width: auto; padding: 12px 32px;">Save Target</button>
+                            </div>
+                        </form>
+                        
+                        <h3 style="font-size:0.85rem; color:var(--text-muted); margin-bottom:16px; text-transform:uppercase; font-weight:700;">Active Configurations</h3>
+                        <div id="list-budget-plans" style="display:flex; flex-direction:column; gap:12px;"></div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2 class="panel-title" style="margin-bottom:0;"><span class="material-icons-round" style="color:var(--warning);">track_changes</span> Reality vs Target</h2>
+                            <div class="panel-summary" id="summary-budget">Total: Rp 0 / Rp 0</div>
+                        </div>
+                        <div id="budget-progress-container" style="display:flex; flex-direction:column; gap: 24px;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-subscriptions" class="view-section">
+                <div class="grid-3">
+                    <div class="stat-card" style="border-left: 4px solid var(--purple); grid-column: span 1;">
+                        <div class="stat-icon" style="background: var(--purple);"><span class="material-icons-round">event_repeat</span></div>
+                        <div class="stat-info"><h3 title="Estimated Monthly Fixed Cost">Est. Monthly Cost</h3><h2 id="sub-monthly-cost">Rp 0</h2></div>
+                    </div>
+                    <div class="panel" style="grid-column: span 2;">
+                        <h2 class="panel-title"><span class="material-icons-round" style="color:var(--purple);">add_circle</span> Add Fixed Subscription / Bill</h2>
+                        <form id="form-add-sub">
+                            <div class="grid-3">
+                                <div class="form-group">
+                                    <label>Service Name</label>
+                                    <input type="text" id="sub-name" class="form-control" placeholder="e.g. Netflix Premium" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Billing Cost (IDR)</label>
+                                    <input type="number" id="sub-price" class="form-control" placeholder="e.g. 186000" required>
+                                    <span class="format-helper" id="helper-sub-price"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label>Billing Cycle</label>
+                                    <select id="sub-cycle" class="form-control" required>
+                                        <option value="monthly">Monthly</option>
+                                        <option value="yearly">Yearly</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: flex-end;">
+                                <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, var(--purple), #6366f1); width: auto; padding: 12px 32px;">Save Bill</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title" style="margin-bottom:0;"><span class="material-icons-round">format_list_bulleted</span> Your Fixed Bills</h2>
+                        <div class="panel-summary" id="summary-subs">Active: 0 | Paused: 0</div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><tr><th>Service Name</th><th>Billing Cost</th><th>Cycle</th><th>Est. Monthly</th><th>Payment & Action</th></tr></thead>
+                            <tbody id="tbody-subs"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-savings" class="view-section">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title" style="margin-bottom:0;"><span class="material-icons-round" style="color:var(--success);">savings</span> Future Savings Goals</h2>
+                        <div class="panel-summary" id="summary-sav">Total Saved: Rp 0 / Rp 0</div>
+                    </div>
+                    <form id="form-add-saving" style="margin-bottom: 32px;">
+                        <div class="grid-2">
+                            <div class="form-group">
+                                <label>Goal Name</label>
+                                <input type="text" id="sav-name" class="form-control" placeholder="e.g. Emergency Fund" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Target Amount (IDR)</label>
+                                <input type="number" id="sav-target" class="form-control" placeholder="e.g. 50000000" required>
+                                <span class="format-helper" id="helper-sav-target"></span>
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button type="submit" class="btn-primary" style="width: auto; padding: 12px 32px;">Create New Goal</button>
+                        </div>
+                    </form>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><tr><th>Savings Progress</th><th>Action</th></tr></thead>
+                            <tbody id="tbody-savings"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-wishlist" class="view-section">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title" style="margin-bottom:0;"><span class="material-icons-round" style="color:var(--info);">shopping_bag</span> Purchase Wishlist Items</h2>
+                        <div class="panel-summary" id="summary-wish">Total Pending: Rp 0</div>
+                    </div>
+                    <form id="form-add-wishlist" style="margin-bottom: 32px;">
+                        <div class="grid-3">
+                            <div class="form-group">
+                                <label>Item Name</label>
+                                <input type="text" id="wish-name" class="form-control" placeholder="e.g. Macbook Pro M3" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Estimated Price (IDR)</label>
+                                <input type="number" id="wish-price" class="form-control" placeholder="e.g. 25000000" required>
+                                <span class="format-helper" id="helper-wish-price"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Store URL (Optional)</label>
+                                <input type="url" id="wish-link" class="form-control" placeholder="https://amazon.com/...">
+                            </div>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button type="submit" class="btn-primary" style="width: auto; padding: 12px 32px;">Add to Wishlist</button>
+                        </div>
+                    </form>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead><tr><th>Item Info & Price</th><th>Reference Link</th><th>Status / Action</th></tr></thead>
+                            <tbody id="tbody-wishlist"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-crypto" class="view-section">
+                <div class="grid-3">
+                    <div class="stat-card" style="border-left: 4px solid var(--crypto);">
+                        <div class="stat-icon" style="background: var(--crypto);"><span class="material-icons-round">account_balance</span></div>
+                        <div class="stat-info"><h3 title="Cumulative Active Capital">Active Capital (USD)</h3><h2 id="crypto-capital">$ 0.00</h2></div>
+                    </div>
+                    <div class="stat-card" id="card-crypto-pnl" style="border-left: 4px solid var(--text-muted);">
+                        <div class="stat-icon" id="crypto-pnl-icon" style="background: var(--text-muted);"><span class="material-icons-round">trending_flat</span></div>
+                        <div class="stat-info"><h3 title="Cumulative Realized PnL">Realized PnL (USD)</h3><h2 id="crypto-pnl">$ 0.00</h2></div>
+                    </div>
+                    <div class="stat-card" style="border-left: 4px solid var(--info);">
+                        <div class="stat-icon" style="background: var(--info);"><span class="material-icons-round">sync_alt</span></div>
+                        <div class="stat-info"><h3 title="Total Executed Trades (Filtered)">Total Trades</h3><h2 id="crypto-trades-count">0</h2></div>
+                    </div>
+                </div>
+
+                <div class="panel" style="grid-column: 1 / -1;">
+                    <div class="panel-header">
+                        <h2 class="panel-title" style="margin-bottom:0;"><span class="material-icons-round" style="color: var(--crypto);">pie_chart</span> Active Holdings & Average Cost</h2>
+                        <div class="panel-summary" id="summary-crypto-hold">Snapshot up to Selected Period</div>
+                    </div>
+                    <div class="table-wrapper" style="max-height: 350px; overflow-y: auto;">
+                        <table id="table-crypto-portfolio">
+                            <thead><tr><th>Crypto Asset</th><th>Holdings (Qty)</th><th>Avg Buy Price (USD)</th><th>Invested (USD)</th><th>Realized PnL (USD)</th></tr></thead>
+                            <tbody id="tbody-crypto-portfolio"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="grid-2" style="align-items: stretch;">
+                    <div class="panel" style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h2 class="panel-title"><span class="material-icons-round">swap_horiz</span> Log Execution Trade</h2>
+                            <form id="form-add-crypto" style="display: flex; flex-direction: column;">
+                                <div class="grid-2" style="gap: 16px;">
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label>Date</label>
+                                        <input type="date" id="cry-date" class="form-control" required>
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label>Execution Action</label>
+                                        <select id="cry-type" class="form-control" required>
+                                            <option value="buy">BUY</option>
+                                            <option value="sell">SELL</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="grid-2" style="gap: 16px; margin-top: 16px;">
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label>Coin Ticker</label>
+                                        <select id="cry-coin" class="form-control" required></select>
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label>Coin Amount (Qty)</label>
+                                        <input type="number" step="any" id="cry-amount" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-top: 16px;">
+                                    <label>Execution Price per Coin (USD)</label>
+                                    <input type="number" step="any" id="cry-price" class="form-control" required>
+                                </div>
+                                
+                                <div style="display:flex; justify-content:space-between; align-items: center; margin: 16px 0 24px 0; font-weight:700; color:var(--text-main); background: var(--bg-body); padding: 16px; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+                                    <span>Estimated Total Value:</span> <span id="cry-total-calc" style="color: var(--primary); font-size: 1.15rem;">$ 0.00</span>
+                                </div>
+                                
+                                <div style="display: flex; justify-content: flex-end; margin-top: auto;">
+                                    <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, var(--crypto), #d97706); width: auto; padding: 12px 32px;">Save Trade Record</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="panel" style="display: flex; flex-direction: column;">
+                        <h2 class="panel-title"><span class="material-icons-round">history</span> Trade History (Selected Period)</h2>
+                        <div class="table-wrapper" style="flex: 1; max-height: 420px; overflow-y: auto;">
+                            <table id="table-crypto-history">
+                                <thead><tr><th>Date</th><th>Type</th><th>Coin</th><th>Qty / Price</th><th>Total Val</th><th>Action</th></tr></thead>
+                                <tbody id="tbody-crypto-history"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-analytics" class="view-section">
+                <div class="grid-4" id="analytic-stats"></div>
+                <div class="panel">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+                        <h2 class="panel-title" style="margin:0;"><span class="material-icons-round" style="color:var(--primary);">timeline</span> Category Detailed Trend (All Time)</h2>
+                        <select id="ana-category" class="form-control" style="width:250px; margin:0;"></select>
+                    </div>
+                    <div class="chart-container"><canvas id="analyticsDetailChart"></canvas></div>
+                </div>
+            </section>
+
+            <section id="view-settings" class="view-section">
+                <div class="grid-3">
+                    <div class="panel">
+                        <h2 class="panel-title"><span class="material-icons-round">shopping_cart</span> Expense Categories</h2>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; margin-bottom: 24px;" id="list-cat-expense"></div>
+                        <form id="form-setting-expense" style="display: flex; gap: 12px; align-items: flex-end; margin-top: auto;">
+                            <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                                <input type="text" id="new-cat-expense" class="form-control" placeholder="Add new..." required>
+                            </div>
+                            <button type="submit" class="btn-primary" style="width: auto; padding: 12px 20px; margin-bottom: 0;">Add</button>
+                        </form>
+                    </div>
+                    
+                    <div class="panel">
+                        <h2 class="panel-title"><span class="material-icons-round">payments</span> Income Categories</h2>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; margin-bottom: 24px;" id="list-cat-income"></div>
+                        <form id="form-setting-income" style="display: flex; gap: 12px; align-items: flex-end; margin-top: auto;">
+                            <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                                <input type="text" id="new-cat-income" class="form-control" placeholder="Add new..." required>
+                            </div>
+                            <button type="submit" class="btn-primary" style="width: auto; padding: 12px 20px; margin-bottom: 0;">Add</button>
+                        </form>
+                    </div>
+                    
+                    <div class="panel">
+                        <h2 class="panel-title"><span class="material-icons-round" style="color: var(--crypto);">currency_bitcoin</span> Crypto Tickers</h2>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; margin-bottom: 24px;" id="list-coins"></div>
+                        <form id="form-setting-coin" style="display: flex; gap: 12px; align-items: flex-end; margin-top: auto;">
+                            <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                                <input type="text" id="new-coin" class="form-control" placeholder="e.g. ADA" required style="text-transform: uppercase;">
+                            </div>
+                            <button type="submit" class="btn-primary" style="width: auto; padding: 12px 20px; margin-bottom: 0;">Add</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="panel" style="display: flex; flex-direction: column; justify-content: space-between; background: linear-gradient(135deg, var(--bg-surface), rgba(79, 70, 229, 0.05)); border: 1px solid var(--primary-light);">
+                        <div>
+                            <h2 class="panel-title"><span class="material-icons-round" style="color:var(--primary);margin-right: 12px">settings_backup_restore</span> System Backup & Restore</h2>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; margin-top: 12px">It is highly recommended to regularly back up (Export) your data. Import your JSON file to restore all previously saved records.</p>
+                        </div>
+                        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                            <button type="button" id="btn-export-json" class="btn-primary" style="width: max-width: 300px; padding: 12px 24px; display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--success), #059669);"><span class="material-icons-round">file_download</span> Export Backup (JSON)</button>
+                            <button type="button" id="btn-trigger-import" class="btn-primary" style="width: max-width: 300px; padding: 12px 24px; display: flex; align-items: center; gap: 8px; background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border); box-shadow: none;"><span class="material-icons-round" style="color: var(--primary);">file_upload</span> Import Backup (JSON)</button>
+                            <input type="file" id="file-import-json" accept=".json" style="display: none;">
+                        </div>
+                    </div>
+
+                    <div class="panel" style="display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.05); text-align: left;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                                <div style="width: 50px; height: 50px; background: rgba(239,68,68,0.1); color: var(--danger); border-radius: 50%; display: flex; align-items:center; justify-content:center;"><span class="material-icons-round" style="font-size: 28px;">warning</span></div>
+                                <h2 class="panel-title" style="color: var(--danger); margin-bottom: 0;">Danger Zone</h2>
+                            </div>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 24px;">This action will permanently wipe all data (Transactions, Crypto, Wishlist, etc.) stored in this browser. This cannot be undone without a backup file.</p>
+                        </div>
+                        <button type="button" id="btn-reset-data" class="btn-primary btn-danger" style="max-width: 300px;">Wipe System Records</button>
+                    </div>
+                    <div class="panel" style="margin-top: 0px; border: 1px solid var(--info); background: rgba(59, 130, 246, 0.05);">
+                            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                                <div style="width: 50px; height: 50px; background: rgba(59, 130, 246, 0.1); color: var(--info); border-radius: 50%; display: flex; align-items:center; justify-content:center;"><span class="material-icons-round" style="font-size: 28px;">cloud_sync</span></div>
+                                <h2 class="panel-title" style="color: var(--info); margin-bottom: 0;">Cloud Sync</h2>
+                        </div>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+                            Use your Personal Access Token (Scope: Gist) and Gist ID to sync data across devices.
+                            </p>
+    
+    <div class="form-group">
+        <label>GitHub Personal Access Token</label>
+        <input type="password" id="gh-token" class="form-control" placeholder="ghp_xxxxxxxxxxxxxxxxx">
+    </div>
+    <div class="form-group">
+        <label>Gist ID</label>
+        <input type="text" id="gh-gist-id" class="form-control" placeholder="Contoh: 8a4b2c1d9f...">
+    </div>
+    
+    <button type="button" id="btn-save-gh" class="btn-primary" style="max-width: 300px; background: var(--info);">
+        Save Cloud Config
+    </button>
+</div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="toast-container" aria-live="polite"></div>
+
+<script src="script.js"></script>
+
+<script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker Registered!', reg))
+                .catch(err => console.error('Service Worker Registration Failed!', err));
+            });
+        }
+    </script>
+</body>
+</html>
