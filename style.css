@@ -52,7 +52,13 @@
         /* --- Sidebar --- */
         aside { width: 280px; background: var(--bg-surface); border-right: 1px solid var(--border); padding: 24px 20px; display: flex; flex-direction: column; z-index: 20; flex-shrink: 0; overflow-y: auto;}
         .brand { font-size: 1.5rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; margin-bottom: 32px; letter-spacing: -0.5px;}
-        .brand span { background: linear-gradient(135deg, var(--primary), #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 30px;}
+        .brand span { 
+            background: linear-gradient(135deg, var(--primary), #ec4899); 
+            -webkit-background-clip: text; 
+            background-clip: text; /* Ini adalah kode standar yang diminta VS Code */
+            -webkit-text-fill-color: transparent; 
+            font-size: 30px;
+        }
         
         nav { display: flex; flex-direction: column; gap: 6px; flex: 1; }
         .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 14px; color: var(--text-muted); border-radius: var(--radius-md); font-weight: 600; font-size: 0.9rem; text-decoration: none; position: relative; }

@@ -661,7 +661,7 @@ const AppState = {
                     document.getElementById('summary-wish').innerText = `Total Pending Cost: ${Util.idr(totWish)}`;
                 },
 
-crypto() {
+                crypto() {
                     let port = {}; let tCost = 0; let gPnl = 0;
                     
                     let chronoTrades = [...AppState.data.cryptoTrades]
@@ -692,60 +692,40 @@ crypto() {
                         }
                     });
 
-                    // ==========================================
-                    // 🌟 KODINGAN BARU: HITUNG HARGA LIVE (ANTI-MACET)
-                    // ==========================================
+                    // 1. Render/Cetak Tabel Daftar Koin ke Layar
+                    let pHtml = '';
+                    Object.keys(port).forEach(coin => {
+                        let p = port[coin]; gPnl += p.p;
+                        if(p.h > 0 || !isZero(p.p)) {
+                            let avg = p.h > 0 ? p.c / p.h : 0; 
+                            tCost += p.c;
+                            pHtml += `<tr><td><span class="badge" style="background:var(--border); color:var(--text-main); font-size:0.85rem;">${coin}</span></td><td><strong>${Util.coinQty(p.h)}</strong></td><td>${Util.usd(avg)}</td><td><strong>${Util.usd(p.c)}</strong></td><td style="color:${p.p>0?'var(--success)':(p.p<0?'var(--danger)':'var(--text-main)')}; font-weight:800;">${p.p>0?'+':''}${Util.usd(p.p)}</td></tr>`;
+                        }
+                    });
+
+                    document.getElementById('tbody-crypto-portfolio').innerHTML = pHtml || '<tr><td colspan="5" style="text-align:center; padding:20px;">No active assets in portfolio for this period.</td></tr>';
+                    document.getElementById('crypto-capital').innerText = Util.usd(tCost);
+
+                    // 2. Kalkulasi Harga Live dari CoinGecko (Anti-Macet)
                     try {
                         let totalLiveValueUSD = 0;
-                        
                         for (let coin in port) {
                             let amountDiTangan = port[coin].h || 0; 
-                            
                             if (amountDiTangan > 0) {
                                 let hargaLive = 0;
-                                // Cek ganda agar tidak crash jika internet mati / CoinGecko lambat
                                 if (typeof CryptoAPI !== 'undefined' && CryptoAPI.pricesUSD) {
                                     hargaLive = CryptoAPI.pricesUSD[coin] || 0;
                                 }
                                 totalLiveValueUSD += (amountDiTangan * hargaLive);
                             }
                         }
-
-                        // Kirim total harganya ke Dashboard HTML
                         const elTotal = document.getElementById('crypto-net-worth');
                         if (elTotal) {
                             elTotal.innerText = `$ ${totalLiveValueUSD.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
                         }
                     } catch (err) {
-                        console.log("Live price calculations are temporarily disabled to prevent the table from freezing", err);
+                        console.log("Kalkulasi Live Harga dilewati", err);
                     }
-                    // ==========================================
-
-                    // ... (kodingan asli Anda yang mencetak isi tabel/baris <tr> tetap biarkan di bawah sini) ...
-
-                    let pHtml = '';
-                    Object.keys(port).forEach(coin => {
-                        let p = port[coin]; gPnl += p.p;
-                        if(p.h>0 || !isZero(p.p)) {
-                            let avg = p.h>0 ? p.c/p.h : 0;
-                            tCost += p.c;
-                            pHtml += `<tr><td><span class="badge" style="background:var(--border); color:var(--text-main); font-size:0.85rem;">${coin}</span></td><td><strong>${Util.coinQty(p.h)}</strong></td><td>${Util.usd(avg)}</td><td><strong>${Util.usd(p.c)}</strong></td><td style="color:${p.p>0?'var(--success)':(p.p<0?'var(--danger)':'var(--text-main)')}; font-weight:800;">${p.p>0?'+':''}${Util.usd(p.p)}</td></tr>`;
-                        }
-                    });
-                    document.getElementById('tbody-crypto-portfolio').innerHTML = pHtml || '<tr><td colspan="5" style="text-align:center; padding:20px;">No active assets in portfolio for this period.</td></tr>';
-                    
-                    document.getElementById('crypto-capital').innerText = Util.usd(tCost);
-                    
-                    let pEl = document.getElementById('crypto-pnl'); let iEl = document.getElementById('crypto-pnl-icon'); let cEl = document.getElementById('card-crypto-pnl');
-                    pEl.innerText = (gPnl>0?'+':'') + Util.usd(gPnl);
-                    if(gPnl > 0) { pEl.style.color='var(--success)'; iEl.style.background='var(--success)'; iEl.innerHTML='<span class="material-icons-round">trending_up</span>'; cEl.style.borderLeftColor='var(--success)';} 
-                    else if(gPnl < 0) { pEl.style.color='var(--danger)'; iEl.style.background='var(--danger)'; iEl.innerHTML='<span class="material-icons-round">trending_down</span>'; cEl.style.borderLeftColor='var(--danger)';}
-                    else { pEl.style.color='var(--text-main)'; iEl.style.background='var(--text-muted)'; iEl.innerHTML='<span class="material-icons-round">trending_flat</span>'; cEl.style.borderLeftColor='var(--border)';}
-
-                    let monthTrades = AppState.data.cryptoTrades.filter(t => Filter.isMatch(t.date));
-                    document.getElementById('crypto-trades-count').innerText = monthTrades.length;
-
-                    document.getElementById('tbody-crypto-history').innerHTML = monthTrades.map(t => `<tr><td>${t.date}</td><td><span class="badge ${t.type==='buy'?'badge-buy':'badge-sell'}">${t.type}</span></td><td><strong>${t.coin}</strong></td><td>${Util.coinQty(t.amount)}<br><span style="font-size:0.75rem; color:var(--text-muted);">@ ${Util.usd(t.price)}</span></td><td><strong>${Util.usd(t.total)}</strong></td><td><button type="button" data-act="del-cry" data-id="${t.id}" style="color:var(--danger); display:flex;"><span class="material-icons-round" style="font-size:20px;">cancel</span></button></td></tr>`).join('') || '<tr><td colspan="6" style="text-align:center; padding:20px;">No trade execution history in this period.</td></tr>';
                 },
 
                 analytics() {

@@ -484,8 +484,8 @@
                             <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; margin-top: 12px">It is highly recommended to regularly back up (Export) your data. Import your JSON file to restore all previously saved records.</p>
                         </div>
                         <div style="display: flex; gap: 16px; flex-wrap: wrap;">
-                            <button type="button" id="btn-export-json" class="btn-primary" style="width: max-width: 300px; padding: 12px 24px; display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--success), #059669);"><span class="material-icons-round">file_download</span> Export Backup (JSON)</button>
-                            <button type="button" id="btn-trigger-import" class="btn-primary" style="width: max-width: 300px; padding: 12px 24px; display: flex; align-items: center; gap: 8px; background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border); box-shadow: none;"><span class="material-icons-round" style="color: var(--primary);">file_upload</span> Import Backup (JSON)</button>
+<button type="button" id="btn-export-json" class="btn-primary" style="width: 100%; max-width: 300px; padding: 12px 24px; display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--success), #059669);"><span class="material-icons-round">file_download</span> Export Backup (JSON)</button>
+<button type="button" id="btn-trigger-import" class="btn-primary" style="width: 100%; max-width: 300px; padding: 12px 24px; display: flex; align-items: center; gap: 8px; background: var(--bg-body); color: var(--text-main); border: 1px solid var(--border); box-shadow: none;"><span class="material-icons-round" style="color: var(--primary);">file_upload</span> Import Backup (JSON)</button>
                             <input type="file" id="file-import-json" accept=".json" style="display: none;">
                         </div>
                     </div>
@@ -530,7 +530,7 @@
 
     <div id="toast-container" aria-live="polite"></div>
 
-<script src="script.js"></script>
+<script src="script.js?v=99"></script>
 
 <script>
         if ('serviceWorker' in navigator) {
