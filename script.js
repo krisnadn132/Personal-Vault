@@ -112,25 +112,29 @@ const AppState = {
     },
     
     // --- 4. Fungsi Simpan (Menyimpan secara lokal & Lempar ke Cloud) ---
-    save() { 
+// --- 4. Fungsi Simpan (Menyimpan secara lokal & Lempar ke Cloud) ---
+    async save() { 
         // 1. Simpan ke Local Storage untuk keamanan offline
         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data)); 
         
-        // 2. Kirim update ke GitHub secara diam-diam di background
+        // 2. Kirim update ke GitHub dan paksa browser menunggunya
         const { token, gistId } = this.getGitHubConfig();
         if (token && gistId) {
-            fetch(`https://api.github.com/gists/${gistId}`, {
-                method: 'PATCH',
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    files: { 'vault_data.json': { content: JSON.stringify(this.data, null, 2) } }
-                })
-            }).then(res => {
+            try {
+                const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        files: { 'vault_data.json': { content: JSON.stringify(this.data, null, 2) } }
+                    })
+                });
                 if(res.ok) console.log('Sukses tersimpan ke GitHub Cloud!');
-            }).catch(err => console.error('Gagal menyimpan ke GitHub:', err));
+            } catch(err) {
+                console.error('Gagal menyimpan ke GitHub:', err);
+            }
         }
     }
 };
