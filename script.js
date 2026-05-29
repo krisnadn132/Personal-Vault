@@ -201,21 +201,46 @@ const AppState = {
 
             // Time Machine Logic Filter
             const Filter = {
+                getMode: () => document.getElementById('filter-mode').value,
                 getYear: () => document.getElementById('filter-year').value,
                 getMonth: () => document.getElementById('filter-month').value,
+                getStart: () => document.getElementById('filter-start').value,
+                getEnd: () => document.getElementById('filter-end').value,
+                
                 isMatch: (dateStr) => {
-                    let y = Filter.getYear(); let m = Filter.getMonth();
-                    if (y === 'all') return true;
-                    if (m === 'all') return dateStr.startsWith(y);
-                    return dateStr.startsWith(`${y}-${m}`);
+                    if (Filter.getMode() === 'range') {
+                        let s = Filter.getStart();
+                        let e = Filter.getEnd();
+                        if (!s && !e) return true; // Tampilkan semua jika tidak ada yang dipilih
+                        if (s && e) return dateStr >= s && dateStr <= e;
+                        if (s) return dateStr >= s;
+                        if (e) return dateStr <= e;
+                    } else {
+                        let y = Filter.getYear(); let m = Filter.getMonth();
+                        if (y === 'all') return true;
+                        if (m === 'all') return dateStr.startsWith(y);
+                        return dateStr.startsWith(`${y}-${m}`);
+                    }
                 },
                 getEndDate: () => {
+                    if (Filter.getMode() === 'range') {
+                        let e = Filter.getEnd();
+                        return e ? e : '9999-12-31';
+                    }
                     let y = Filter.getYear(); let m = Filter.getMonth();
                     if (y === 'all') return '9999-12-31';
                     if (m === 'all') return `${y}-12-31`;
                     return `${y}-${m}-31`; 
                 },
                 getSummaryText: () => {
+                    if (Filter.getMode() === 'range') {
+                        let s = Filter.getStart();
+                        let e = Filter.getEnd();
+                        if (!s && !e) return "All Time (Range)";
+                        if (s && e) return `${s} s/d ${e}`;
+                        if (s) return `Mulai ${s}`;
+                        if (e) return `Sampai ${e}`;
+                    }
                     let y = Filter.getYear(); let m = Filter.getMonth();
                     if (y === 'all') return "All Time";
                     if (m === 'all') return `Year ${y}`;
@@ -296,10 +321,13 @@ const AppState = {
                     let filteredTxs = AppState.data.transactions.filter(t => Filter.isMatch(t.date));
                     filteredTxs.forEach(t => {
                         let key;
-                        if (y === 'all') { key = t.date.substring(0, 4); } 
-                        else if (m === 'all') { key = t.date.substring(5, 7); } 
-                        else { key = t.date.substring(8, 10); } 
-
+                        if (Filter.getMode() === 'range') {
+                            key = t.date; // Jika range, pisahkan batang diagram per hari persis
+                        } else {
+                            if (y === 'all') { key = t.date.substring(0, 4); } 
+                            else if (m === 'all') { key = t.date.substring(5, 7); } 
+                            else { key = t.date.substring(8, 10); } 
+                        }
                         if(!dMap[key]) dMap[key] = { i:0, e:0 };
                         t.type === 'income' ? dMap[key].i += t.amount : dMap[key].e += t.amount;
                     });
@@ -385,7 +413,7 @@ const AppState = {
 
                     let dMap = {};
                     [...AppState.data.transactions].filter(t => t.category === cat && Filter.isMatch(t.date)).reverse().forEach(t => {
-                        let key = Filter.getYear() === 'all' ? t.date.substring(0,7) : t.date;
+                        let key = (Filter.getMode() === 'range' || Filter.getYear() !== 'all') ? t.date : t.date.substring(0,7);
                         dMap[key] = (dMap[key] || 0) + t.amount;
                     });
 
@@ -842,20 +870,44 @@ const AppState = {
             }));
 
             // TIME MACHINE LISTENER
+            // TIME MACHINE LISTENER
             const triggerTimeMachine = () => {
-                let y = Filter.getYear(); let m = Filter.getMonth();
-                if(y === 'all') {
-                    document.getElementById('filter-month').value = 'all';
-                    document.getElementById('filter-month').disabled = true;
-                    document.getElementById('filter-month').style.opacity = '0.5';
+                let mode = Filter.getMode();
+                let monthSelect = document.getElementById('filter-month');
+                let yearSelect = document.getElementById('filter-year');
+                let rangeInputs = document.getElementById('filter-range-inputs');
+
+                if (mode === 'range') {
+                    yearSelect.style.display = 'none';
+                    monthSelect.style.display = 'none';
+                    rangeInputs.style.display = 'flex';
                 } else {
-                    document.getElementById('filter-month').disabled = false;
-                    document.getElementById('filter-month').style.opacity = '1';
+                    yearSelect.style.display = 'inline-block';
+                    monthSelect.style.display = 'inline-block';
+                    rangeInputs.style.display = 'none';
+                    
+                    let y = Filter.getYear();
+                    if(y === 'all') {
+                        monthSelect.value = 'all';
+                        monthSelect.disabled = true;
+                        monthSelect.style.opacity = '0.5';
+                    } else {
+                        monthSelect.disabled = false;
+                        monthSelect.style.opacity = '1';
+                    }
                 }
-                AppState.selectedMonth = y === 'all' || m === 'all' ? '0000-00' : `${y}-${m}`;
+                
+                let y = Filter.getYear(); let m = Filter.getMonth();
+                AppState.selectedMonth = (mode === 'monthly' && y !== 'all' && m !== 'all') ? `${y}-${m}` : '0000-00';
                 Render.all();
                 UI.toast(`Viewing Data: ${Filter.getSummaryText()}`, 'success');
             };
+
+document.getElementById('filter-mode').addEventListener('change', triggerTimeMachine);
+document.getElementById('filter-year').addEventListener('change', triggerTimeMachine);
+document.getElementById('filter-month').addEventListener('change', triggerTimeMachine);
+document.getElementById('filter-start').addEventListener('change', triggerTimeMachine);
+document.getElementById('filter-end').addEventListener('change', triggerTimeMachine);
 
             document.getElementById('filter-year').addEventListener('change', triggerTimeMachine);
             document.getElementById('filter-month').addEventListener('change', triggerTimeMachine);

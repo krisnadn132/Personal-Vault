@@ -262,3 +262,15 @@
             
             .login-card { width: 90%; padding: 24px; }
         }
+        /* Styling untuk Custom Date Range */
+        #filter-range-inputs input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        #filter-range-inputs input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
+        [data-theme="dark"] #filter-range-inputs input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1); /* Membuat ikon kalender menjadi putih di dark mode */
+        }
