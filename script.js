@@ -1,8 +1,8 @@
         document.addEventListener('DOMContentLoaded', () => {
 
             /* =========================================
-               A. CORE ARCHITECTURE & STATE
-               ========================================= */
+            A. CORE ARCHITECTURE & STATE
+            ========================================= */
             const U_HASH = "S3Jpc25h";
             const P_HASH = "S3Jpc25hITMy";
 
@@ -17,7 +17,50 @@
                 coins: ['BTC', 'ETH', 'SOL', 'USDT', 'BNB'],
                 cryptoTrades: [], budgets: {}, savings: [], wishlist: [], subscriptions: [] 
             };
-// Temukan bagian submit login dan pastikan menggunakan async/await
+// ==========================================
+// B. LIVE CRYPTO API (COINGECKO)
+// ==========================================
+const CryptoAPI = {
+    // 1. Kamus Penerjemah: Simbol -> ID CoinGecko
+    coinMap: {
+        'BTC': 'bitcoin',
+        'ETH': 'ethereum',
+        'SOL': 'solana',
+        'USDT': 'tether',
+        'BNB': 'binancecoin'
+    },
+    // Tempat menyimpan harga secara sementara
+    pricesUSD: {}, 
+
+    // 2. Fungsi untuk mengambil harga dari internet
+    async fetchPrices() {
+        try {
+            // Gabungkan semua ID koin menjadi satu teks (bitcoin,ethereum,solana,tether,binancecoin)
+            const ids = Object.values(this.coinMap).join(',');
+            
+            // Hubungi API CoinGecko (Ambil harga dalam USD)
+            const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`);
+            
+            if (!response.ok) throw new Error('Network response was not ok');
+            const data = await response.json();
+            
+            // 3. Format ulang data agar mudah dipanggil menggunakan simbol (Contoh: CryptoAPI.pricesUSD['BTC'])
+            for (const [symbol, id] of Object.entries(this.coinMap)) {
+                if (data[id] && data[id].usd) {
+                    this.pricesUSD[symbol] = data[id].usd;
+                }
+            }
+            console.log("✅ Harga Kripto Live berhasil di-update!", this.pricesUSD);
+            return true;
+        } catch (err) {
+            console.error("❌ Gagal mengambil harga kripto:", err);
+            // Jika tidak ada internet, setel harga default agar web tidak error
+            this.pricesUSD = { 'BTC': 0, 'ETH': 0, 'SOL': 0, 'USDT': 0, 'BNB': 0 };
+            return false;
+        }
+    }
+};
+
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     let u = btoa(document.getElementById('login-username').value);
@@ -499,7 +542,30 @@ const AppState = {
                             } 
                         }
                     });
+                    // ==========================================
+                    // 🌟 KODINGAN BARU: HITUNG HARGA LIVE COINGECKO
+                    // ==========================================
+                    let totalLiveValueUSD = 0;
                     
+                    for (let coin in port) {
+                        let amountDiTangan = port[coin].h;
+                        
+                        if (amountDiTangan > 0) {
+                            let hargaLive = CryptoAPI.pricesUSD[coin] || 0;
+
+                            totalLiveValueUSD += (amountDiTangan * hargaLive);
+                            //Untuk mencetak harga koin satu per satu ke tab Console
+                            console.log(`${coin}: ${amountDiTangan} koin x $${hargaLive} = $${amountDiTangan * hargaLive}`);
+                        }
+                    }
+
+                    // Tampilkan ke layar 
+                    // (Ganti 'summary-crypto' dengan ID kotak total Kripto yang ada di HTML Anda)
+                    const elTotal = document.getElementById('crypto-capital');
+                    if(elTotal) {
+                        elTotal.innerHTML = `Live Value: <strong>$ ${totalLiveValueUSD.toLocaleString('en-US', {minimumFractionDigits: 2})}</strong>`;
+                    }
+
                     Object.values(port).forEach(val => { cryptoCapital += val.c; cryptoPnl += val.p; });
                     
                     let netWorth = fiatBal + ((cryptoCapital + cryptoPnl) * usdToIdrRate);
@@ -696,12 +762,16 @@ const AppState = {
                 else { pwdInput.type = 'password'; icon.textContent = 'visibility'; }
             });
 
-            document.getElementById('loginForm').addEventListener('submit', (e) => {
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 let u = btoa(document.getElementById('login-username').value);
                 let p = btoa(document.getElementById('login-password').value);
                 
                 if(u === U_HASH && p === P_HASH) {
+                    // Tunggu hingga harga kripto selesai di-download sebelum memuat Dashboard
+                await CryptoAPI.fetchPrices();
+                AppState.load();
+
                     document.getElementById('login-screen').style.opacity = '0';
                     setTimeout(() => {
                         document.getElementById('login-screen').style.display = 'none';
