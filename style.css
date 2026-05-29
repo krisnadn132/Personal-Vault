@@ -192,10 +192,8 @@
         @media (max-width: 1024px) { .grid-chart { grid-template-columns: 1fr; } }
         
         @media (max-width: 768px) {
-            /* 1. INI KUNCI UTAMANYA: Mengubah arah flex pada app-wrapper */
             #app-wrapper { flex-direction: column !important; }
             
-            /* 2. Header & Sidebar menjadi di atas */
             aside { 
                 width: 100%; 
                 height: auto; 
@@ -207,7 +205,6 @@
             }
             .brand { margin-bottom: 16px; font-size: 1.5rem; text-align: center; }
             
-            /* 3. Menu Navigasi diubah menjadi horizontal & bisa di-scroll (swipe) ke samping */
             nav { 
                 display: flex !important; 
                 flex-direction: row !important; 
@@ -215,7 +212,6 @@
                 overflow-x: auto; 
                 gap: 8px; 
                 padding-bottom: 8px;
-                /* Menyembunyikan scrollbar agar terlihat lebih rapi */
                 -ms-overflow-style: none;  
                 scrollbar-width: none;  
             }
@@ -228,21 +224,35 @@
                 border-radius: 8px;
             }
             
-            /* 4. Sembunyikan footer di HP agar tidak menuhi layar */
             .sidebar-footer { display: none; } 
             
             main { padding: 16px; padding-bottom: 40px; }
+
+            /* --- PERBAIKAN HEADER (TANGGAL, THEME, BACKUP) --- */
+            header {
+                position: relative !important; /* Mematikan fitur melayang agar tidak menimpa konten */
+                flex-direction: column; /* Menyusun elemen header dari atas ke bawah */
+                align-items: flex-start;
+                gap: 16px;
+                padding: 16px;
+                margin-bottom: 24px;
+                height: auto;
+            }
             
-            /* 5. Paksa semua grid dan form menjadi 1 kolom memanjang ke bawah */
+            .header-actions {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap; /* Tombol otomatis turun jika layar terlalu sempit */
+            }
+            /* -------------------------------------------------------- */
+            
             .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; gap: 16px; }
             
-            /* 6. Cegah tabel agar tidak merusak layout layar */
             .table-container, .table-responsive, table, .table-wrapper { 
                 display: block; 
                 width: 100%; 
                 overflow-x: auto; 
             }
             
-            /* Penyesuaian form login untuk HP (Target yang benar adalah .login-card) */
             .login-card { width: 90%; padding: 24px; }
         }
